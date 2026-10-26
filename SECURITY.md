@@ -6,7 +6,7 @@ Signal Room is a local learning demo with made-up errors. It has no login or sep
 
 The API accepts three scenario IDs and two release labels. It does not accept custom errors, attachments, user details, URLs or SDK settings.
 
-The SDK uses a separate client and scope for each capture. Default integrations, runtime channel injection, tracing and client reports are disabled. SDK data-collection settings disable identity, cookies, request contents, source context, variables, database/queue contents and AI, MCP and GraphQL contents.
+The SDK uses a separate client and scope for each capture. Default integrations, runtime channel injection, tracing and client reports are disabled. SDK data-collection settings disable identity, cookies, request contents, source context, variables, database/queue contents and other integration payloads.
 
 Before storing an event, the app rebuilds it from approved fields. The local transport checks those fields again and drops protocol headers and non-event items. User details, request data, hostnames, full file paths and breadcrumbs are left out.
 

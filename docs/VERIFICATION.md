@@ -20,8 +20,5 @@ Errors are grouped by sample scenario. Any new event reopens a resolved issue as
 
 The app's store has three possible issue groups, last-200 event retention and up to 20 examples per issue. There is no persistence, browser replay, cloud account, authentication or original upstream installation involved.
 
-## Independent review
-
-Claude independently reviewed the credential-free design. Suggestions about a dedicated SDK client, package-version drift, environment isolation, a second transport projection, unsupported envelope items, chunked-body tests and clear grouping/ownership claims were checked against implementation. The code uses SDK 11's typed dataCollection options rather than relying on removed legacy flags. No customer data or credentials were shared.
 
 Dependency audit and source-secret-scan results are recorded in [the publication checklist](PUBLICATION_CHECKLIST.md). A clean source export also passed installation, formatting, tests, build and a compiled-server startup smoke check with six local SDK events. Future hosting, proxies or changes require their own review. The review did not audit the whole Sentry platform or its Git history.
