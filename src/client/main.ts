@@ -26,11 +26,12 @@ async function api(path: string, data?: object) {
     path,
     data
       ? {
+          credentials: "omit",
           method: "POST",
           headers: { "Content-Type": "application/json", "X-Demo-Action": "1" },
           body: JSON.stringify(data),
         }
-      : undefined,
+      : { credentials: "omit" },
   );
   const result = await response.json();
   if (!response.ok)

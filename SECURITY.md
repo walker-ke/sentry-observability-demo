@@ -16,6 +16,7 @@ This is a policy for known synthetic scenarios. It is **not** a universal PII-re
 
 - Loopback binding by default. Non-loopback binding requires an explicit plain HTTP(S) `APP_ORIGIN`.
 - Host must match the configured origin. Browser writes require matching Origin, JSON content type and a custom action header; cross-site Fetch metadata is denied.
+- Browser API requests explicitly omit credentials, avoiding incidental cookies from other localhost apps.
 - No CORS permission, arbitrary static path serving or telemetry upload route.
 - JSON bodies capped at 2 KB including chunked transfers, bounded header size and request timeout.
 - Extra/prototype fields, unknown scenarios/releases/statuses and arbitrary issue IDs are rejected.
