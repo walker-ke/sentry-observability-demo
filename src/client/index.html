@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="An independent Sentry SDK integration lab with fictional errors and local-only transport."
+      content="Try error tracking with sample errors and the Sentry SDK. Nothing is uploaded."
     />
-    <title>Signal Room · Error capture lab</title>
+    <title>Signal Room · Error tracking demo</title>
     <link rel="stylesheet" href="/styles.css" />
     <script type="module" src="/client.js"></script>
   </head>
@@ -15,15 +15,15 @@
     <header class="topbar">
       <a class="wordmark" href="/" aria-label="Signal Room home"
         ><span class="mark" aria-hidden="true">sr</span> signal room</a
-      ><span class="top-context">Developer sandbox</span
-      ><span class="local-label">Local-only transport</span>
+      ><span class="top-context">Error tracking demo</span
+      ><span class="local-label">Saved locally</span>
     </header>
     <div class="app-shell">
       <aside class="sidebar">
         <div class="workspace-label">WORKSPACE</div>
         <div class="project-name">
           <span class="project-glyph">C</span
-          ><span>Checkout sandbox<small>Fictional service</small></span>
+          ><span>Sample checkout<small>Sample service</small></span>
         </div>
         <nav aria-label="Lab navigation">
           <button class="nav-item active" aria-pressed="true" data-nav="inbox">
@@ -41,8 +41,7 @@
         <div class="sidebar-note">
           <span class="status-light"></span><strong>No external uploads</strong>
           <p>
-            Events stay in this process. No account, DSN or real user data
-            needed.
+            Sample errors stay in this running app. No Sentry account needed.
           </p>
           <span id="sdk-version">Official Sentry Node SDK</span>
         </div>
@@ -55,7 +54,7 @@
                 Projects <span>/</span> checkout-sandbox
               </div>
               <h1>Issue inbox</h1>
-              <p>Break it on purpose. Follow the event.</p>
+              <p>Create a sample error and see what happened.</p>
             </div>
             <button id="reset" class="button quiet">Clear session</button>
           </div>
@@ -69,7 +68,7 @@
               ><strong id="capture-count">—</strong>
             </div>
             <div>
-              <span class="summary-label">Outside uploads</span
+              <span class="summary-label">Events uploaded</span
               ><strong>0 <span class="tiny">by design</span></strong>
             </div>
           </div>
@@ -115,17 +114,18 @@
                 ><span>STATUS</span>
               </div>
               <div id="issues" aria-label="Captured issues">
-                <div class="empty">Loading the local pipeline…</div>
+                <div class="empty">Loading sample errors…</div>
               </div>
               <div class="retention-note" id="retention">
-                Events are retained in memory only.
+                Events are kept in memory until you clear them or restart the
+                app.
               </div>
             </div>
             <aside class="scenario-pane" aria-label="Scenario runner">
               <div class="pane-heading">
                 <span class="small-label">THE TEST BENCH</span>
-                <h2>Make a little noise.</h2>
-                <p>Run a controlled failure through the real SDK.</p>
+                <h2>Try an error.</h2>
+                <p>Choose a sample error to capture with the Sentry SDK.</p>
               </div>
               <label class="field-label" for="scenario">Scenario</label
               ><select id="scenario">
@@ -146,7 +146,7 @@
                 ><span>Local inbox</span>
               </div>
               <p class="scenario-tip">
-                Resolve an issue, then capture it again to see a regression.
+                Mark an issue resolved, then capture it again to see it reopen.
               </p>
             </aside>
           </div>
@@ -166,21 +166,20 @@
           <div class="page-heading">
             <div>
               <div class="breadcrumb">Sandbox <span>/</span> privacy</div>
-              <h1>Small payload. Clear boundaries.</h1>
-              <p>Inspect the policy that runs before an event is retained.</p>
+              <h1>What the app keeps</h1>
+              <p>See which details are saved with each sample error.</p>
             </div>
           </div>
           <div class="policy-banner">
-            <span class="status-light"></span> This demo has no outbound
-            telemetry transport.
+            <span class="status-light"></span> Sample errors are never uploaded
+            to Sentry.
           </div>
           <div class="policy-grid">
             <div>
-              <h2>Keep only what teaches.</h2>
+              <h2>Only the details this demo needs</h2>
               <p>
-                We construct a new event from known scenario definitions. We
-                never accept arbitrary error messages, event uploads or customer
-                data through the API.
+                Each event comes from one of the three sample errors. The API
+                does not accept custom errors, uploads or customer data.
               </p>
               <dl class="policy-list">
                 <div>
@@ -209,7 +208,8 @@
                   <dt>Retention</dt>
                   <dd>
                     Last 200 local events and up to 20 examples per issue.
-                    Restart or clear the session to discard the dataset.
+                    Restart the app or clear the session to remove these
+                    records.
                   </dd>
                 </div>
               </dl>
@@ -230,28 +230,28 @@ is deliberately ignored.</code></pre>
             </div>
           </div>
           <p class="section-note">
-            This protects the limited scenarios in this app. It is not a
-            universal PII scrubber for a production application.
+            These checks cover the sample errors in this app. They have not been
+            verified as a filter for real customer data.
           </p>
         </section>
         <section id="view-architecture" class="view" hidden>
           <div class="page-heading">
             <div>
               <div class="breadcrumb">Sandbox <span>/</span> architecture</div>
-              <h1>Real SDK. Deliberately small app.</h1>
+              <h1>From sample error to inbox</h1>
               <p>
-                Your integration work is the project. Sentry's platform belongs
-                to Sentry.
+                This app uses the official Sentry SDK. The inbox and sample
+                workflows are built for this demo.
               </p>
             </div>
           </div>
           <div class="architecture-flow">
             <article>
               <span>01</span>
-              <h2>Controlled failure</h2>
+              <h2>Sample error</h2>
               <p>
-                A fixed TypeScript function throws. The server catches it and
-                creates a dedicated capture scope.
+                A sample function throws an error. The server catches it and
+                prepares it for the SDK.
               </p>
             </article>
             <article>
@@ -266,25 +266,24 @@ is deliberately ignored.</code></pre>
               <span>03</span>
               <h2>Local transport</h2>
               <p>
-                An allowlist rebuilds the event. A custom transport retains a
-                safe projection; it never sends a request to Sentry.
+                The app keeps only approved fields, checks them again and saves
+                them in memory. It sends nothing to Sentry.
               </p>
             </article>
             <article>
               <span>04</span>
               <h2>Issue workflow</h2>
               <p>
-                This original demo groups by scenario. Resolve, reopen and
-                recapture to explore a simple regression workflow.
+                Errors from the same scenario share one issue. Resolve it, then
+                capture it again to see it reopen.
               </p>
             </article>
           </div>
           <div class="explanation">
             <h2>What this is</h2>
             <p>
-              An independent portfolio integration using
-              <code>@sentry/node</code>, plus an original UI, safe-payload
-              boundary, test suite and in-memory issue workflow.
+              A small app using <code>@sentry/node</code>, with its own inbox,
+              data checks and tests.
             </p>
             <h2>What it doesn't reproduce</h2>
             <p>
@@ -302,7 +301,7 @@ is deliberately ignored.</code></pre>
           </div>
         </section>
         <footer class="app-footer">
-          Independent portfolio demo
+          Sample error tracking app
           <span
             >Built with the Sentry Node SDK · Not affiliated with Sentry</span
           >

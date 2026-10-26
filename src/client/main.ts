@@ -35,7 +35,7 @@ async function api(path: string, data?: object) {
   );
   const result = await response.json();
   if (!response.ok)
-    throw new Error(result.error ?? "The request could not complete.");
+    throw new Error(result.error ?? "That did not work. Please try again.");
   return result;
 }
 function relative(timestamp: number) {
@@ -68,19 +68,19 @@ function renderIssues() {
             `<button class="issue-row ${issue.id === selected ? "selected" : ""}" data-issue="${escape(issue.id)}" aria-pressed="${issue.id === selected}"><span class="issue-primary"><span class="severity ${issue.level}" aria-label="${issue.level}">${issue.level === "warning" ? "~" : "!"}</span><span class="issue-copy"><strong>${escape(issue.type)}</strong><span class="issue-message">${escape(issue.title)}</span><span class="issue-service">${escape(issue.service)} · ${relative(issue.lastSeen)}</span></span></span><span class="issue-count">${issue.count}</span><span class="issue-state ${issue.status}">${issue.status}</span></button>`,
         )
         .join("")
-    : `<div class="empty"><strong>${state.issues.length ? "No matching issues." : "A clean slate."}</strong>${state.issues.length ? "Change the status filter or local search." : "Run a scenario to capture your first event."}</div>`;
+    : `<div class="empty"><strong>${state.issues.length ? "No matching issues." : "No errors yet."}</strong>${state.issues.length ? "Try another status or search term." : "Choose a sample error and click Capture this error."}</div>`;
 }
 function renderDetail() {
   const issue = currentIssue();
   const target = el("issue-detail");
   if (!issue) {
     target.innerHTML =
-      '<div class="empty">Select an issue to inspect its safe event payload and stack frame.</div>';
+      '<div class="empty">Select an issue to see the saved details and where the error happened.</div>';
     return;
   }
   const event = issue.events[0]!;
   const scenario = state!.scenarios.find((item) => item.id === issue.scenario)!;
-  target.innerHTML = `<div class="detail-heading"><div><div class="detail-kicker">${escape(issue.id)} / EVENT DETAILS</div><h2>${escape(issue.title)}</h2></div><div class="detail-actions"><button class="button" data-status="${issue.status === "resolved" ? "open" : "resolved"}">${issue.status === "resolved" ? "Reopen issue" : "Mark resolved"}</button><button class="button quiet" data-recapture="${escape(issue.scenario)}">Capture again ↗</button></div></div><div class="detail-grid"><div class="code-panel"><div class="code-title">Scenario sketch <span>${escape(scenario.service)}</span></div><ol class="code-lines">${scenario.source.map((line) => `<li>${escape(line)}</li>`).join("")}</ol><div class="stack-frame">SDK frame: ${escape(event.frame.filename)}:${event.frame.line}<br>in ${escape(event.frame.function)}</div></div><div class="code-panel"><div class="code-title">Retained payload <span>Allowlisted fields only</span></div><pre id="payload"></pre></div></div><div class="detail-meta"><span>Events <strong>${issue.count}</strong></span><span>Latest release <strong>${escape(event.release)}</strong></span><span>First seen <strong>${relative(issue.firstSeen)}</strong></span><span>Transport <strong>local memory</strong></span></div>`;
+  target.innerHTML = `<div class="detail-heading"><div><div class="detail-kicker">${escape(issue.id)} / EVENT DETAILS</div><h2>${escape(issue.title)}</h2></div><div class="detail-actions"><button class="button" data-status="${issue.status === "resolved" ? "open" : "resolved"}">${issue.status === "resolved" ? "Reopen issue" : "Mark resolved"}</button><button class="button quiet" data-recapture="${escape(issue.scenario)}">Capture again ↗</button></div></div><div class="detail-grid"><div class="code-panel"><div class="code-title">Example code <span>${escape(scenario.service)}</span></div><ol class="code-lines">${scenario.source.map((line) => `<li>${escape(line)}</li>`).join("")}</ol><div class="stack-frame">SDK frame: ${escape(event.frame.filename)}:${event.frame.line}<br>in ${escape(event.frame.function)}</div></div><div class="code-panel"><div class="code-title">Saved event data <span>Approved fields only</span></div><pre id="payload"></pre></div></div><div class="detail-meta"><span>Events <strong>${issue.count}</strong></span><span>Latest release <strong>${escape(event.release)}</strong></span><span>First seen <strong>${relative(issue.firstSeen)}</strong></span><span>Saved in <strong>app memory</strong></span></div>`;
   el("payload").textContent = JSON.stringify(event, null, 2);
 }
 function render() {
@@ -92,7 +92,7 @@ function render() {
   el("capture-count").textContent = String(state.totalCaptured);
   el("sdk-version").textContent = "Sentry Node SDK " + state.sdkVersion;
   el("retention").textContent =
-    `${state.events.length} retained events · Last ${state.maxEvents} events in process memory · No external uploads`;
+    `${state.events.length} saved events · Keeps the latest ${state.maxEvents} in memory · Nothing uploaded`;
   if (!state.issues.some((issue) => issue.id === selected))
     selected = state.issues[0]?.id ?? "";
   renderIssues();
@@ -106,7 +106,7 @@ async function capture(scenario?: string) {
   if (busy) return;
   busy = true;
   el<HTMLButtonElement>("capture").disabled = true;
-  feedback("Capturing through the official SDK…");
+  feedback("Capturing the sample error…");
   try {
     state = (await api("/api/capture", {
       scenario: scenario ?? el<HTMLSelectElement>("scenario").value,
@@ -120,8 +120,8 @@ async function capture(scenario?: string) {
     render();
     feedback(
       issue?.status === "regressed"
-        ? "Regression detected. The resolved issue has received another event."
-        : "Captured and grouped locally. Nothing was uploaded to Sentry.",
+        ? "This issue happened again, so it is marked as regressed."
+        : "Error added to the inbox. Nothing was uploaded to Sentry.",
     );
   } catch (error) {
     feedback(error instanceof Error ? error.message : "Capture failed.", true);
@@ -179,7 +179,7 @@ document.addEventListener("click", (event) => {
         await refresh();
         feedback(
           target.dataset.status === "resolved"
-            ? "Issue resolved. Capture the same scenario again to explore regression."
+            ? "Issue resolved. Capture it again to see it reopen."
             : "Issue reopened.",
         );
       } catch (error) {
@@ -195,7 +195,7 @@ el("reset").addEventListener("click", () => {
     try {
       await api("/api/reset", {});
       await refresh();
-      feedback("Session cleared. All retained events have been discarded.");
+      feedback("Session cleared. The saved errors have been removed.");
     } catch (error) {
       feedback(error instanceof Error ? error.message : "Reset failed.", true);
     }
@@ -213,7 +213,7 @@ void (async () => {
     updateScenario();
   } catch (error) {
     el("issues").innerHTML =
-      '<div class="empty"><strong>The local pipeline is unavailable.</strong>Reload after the server is running.</div>';
+      '<div class="empty"><strong>Cannot reach the app.</strong>Check that the server is running, then reload this page.</div>';
     feedback(error instanceof Error ? error.message : "Could not load.", true);
     el<HTMLButtonElement>("capture").disabled = true;
   }

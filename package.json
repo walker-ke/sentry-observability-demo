@@ -2,7 +2,7 @@
   "name": "sentry-observability-demo",
   "version": "1.0.0",
   "private": true,
-  "description": "Independent synthetic error-monitoring lab using the official Sentry Node SDK with local-only transport",
+  "description": "An error tracking demo with the Sentry SDK and sample errors that stay local",
   "type": "module",
   "engines": {
     "node": ">=22.12"

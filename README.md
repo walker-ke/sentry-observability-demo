@@ -6,6 +6,12 @@ Everything stays in the app's memory. No errors are uploaded to Sentry, and you 
 
 ![Signal Room error inbox](docs/screenshots/inbox.jpg)
 
+*A sample error in the inbox, ready to inspect or mark resolved.*
+
+## About this project
+
+This demo makes the path from an error to an issue easy to follow. You can trigger the same error twice, inspect the saved details and see what happens when a resolved issue returns.
+
 ## Run it on your computer
 
 You need Node 22.12+ and npm. No database or cloud account is needed.

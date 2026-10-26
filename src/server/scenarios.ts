@@ -10,7 +10,7 @@ export const SCENARIOS: DemoScenario[] = [
     service: "checkout-api",
     level: "error",
     description:
-      "A missing cart reaches the checkout handler. Capture the exception and inspect its safe stack frame.",
+      "The checkout tries to read a cart that is missing. Capture the error to see where it happened.",
     source: [
       "function submitOrder() {",
       "  const cart = undefined;",
@@ -28,7 +28,7 @@ export const SCENARIOS: DemoScenario[] = [
     service: "inventory-api",
     level: "error",
     description:
-      "Simulate an inventory timeout. No actual inventory server or network request is involved.",
+      "Try a sample stock lookup that times out. No inventory server is contacted.",
     source: [
       "function fetchInventory() {",
       "  const deadline = 2500;",
@@ -45,8 +45,7 @@ export const SCENARIOS: DemoScenario[] = [
     functionName: "authorizePayment",
     service: "payments-api",
     level: "warning",
-    description:
-      "Capture a handled payment failure. This is a fictional scenario; no payment is sent.",
+    description: "Try a sample payment error. No payment is sent.",
     source: [
       "function authorizePayment() {",
       "  // A fictional provider response.",
