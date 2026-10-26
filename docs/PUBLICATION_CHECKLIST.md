@@ -1,17 +1,17 @@
-# Publication checklist
+# Release checks
 
-Completed for the initial source release on 26 October 2026:
+These checks were completed for the first release on 26 October 2026.
 
-- [x] Original app/branding; Sentry SDK and upstream platform authorship distinguished.
-- [x] No upstream server code, customer fixtures, Sentry screenshots/logos or original Git history copied.
-- [x] Separate MIT license for original code and preserved third-party notices.
-- [x] Fixed fictional scenarios and release labels; no real account or live DSN required.
-- [x] Local-only SDK transport; no upload configuration or browser analytics/replay.
-- [x] Strict TypeScript, formatting, 24 tests and build passed.
-- [x] Request boundaries, no-egress behavior, environment isolation and retention checked.
-- [x] Browser capture, resolution/regression, data policy and architecture views checked.
-- [x] npm audit reported zero known vulnerabilities at review time.
-- [x] Gitleaks v8.30.1 reported no source leaks in the proposed initial export.
-- [x] Clean source export passed installation, formatting, tests, build and compiled-server startup with six real SDK-generated local events.
+- [x] The app and branding are original, with credit to Sentry for its SDK.
+- [x] No Sentry server code, customer data, logos, screenshots or Git history were copied.
+- [x] The original code has an MIT license. Third-party license notices are included.
+- [x] All examples are fictional. No real account or live DSN is needed.
+- [x] Capture stays local. There is no upload option or browser tracking.
+- [x] TypeScript, formatting, 24 tests and the build passed.
+- [x] Request limits, privacy rules, environment settings and data limits were checked.
+- [x] Capture, resolution, recurrence and the explanatory screens were tried in the browser.
+- [x] npm audit found no known vulnerabilities at the time.
+- [x] Gitleaks v8.30.1 found no leaks in the proposed source export.
+- [x] A fresh source export installed, passed checks and started with six SDK-generated local events.
 
-This checklist describes the demo's initial local verification. The repository's Verify workflow repeats the automated checks after publication. It is not a full audit of getsentry/sentry or a hosted production deployment.
+The GitHub Verify workflow repeats automated checks after publication. These results cover this demo, not the whole Sentry platform or a future hosted website.

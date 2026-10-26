@@ -1,16 +1,16 @@
-# Signal Room — Sentry observability demo
+# Signal Room
 
-An **original portfolio integration** using the official Sentry Node SDK. Trigger controlled exceptions, inspect the retained payload, resolve issues, and recapture them to explore a simple regression workflow.
+A small app for trying error tracking with the official Sentry Node SDK. Create a sample error, look at its details, mark it resolved and trigger it again.
 
-The app runs without a Sentry account and **never uploads telemetry**. A custom transport projects SDK events into a bounded, local, in-memory inbox. Every service, release and error scenario is fictional.
+Everything stays in the app's memory. No errors are uploaded to Sentry, and you do not need a Sentry account. All services, releases and errors are made up.
 
-This repository contains an original application, not a copy of `getsentry/sentry`. Sentry's SDK/platform belong to their respective authors. This project is not affiliated with or endorsed by Sentry.
+![Signal Room error inbox](docs/screenshots/inbox.jpg)
 
-![Signal Room issue inbox](docs/screenshots/inbox.jpg)
+## Run it on your computer
 
-## Run locally
+You need Node 22.12+ and npm. No database or cloud account is needed.
 
-Requires **Node 22.12+** and npm. No database, Docker, OAuth account or cloud service is needed.
+From this project's folder, run:
 
 ```sh
 npm ci --ignore-scripts
@@ -18,60 +18,61 @@ npm run check
 npm start
 ```
 
-Open [http://127.0.0.1:8130](http://127.0.0.1:8130). Six initial events are captured through the SDK during startup. The server binds to loopback by default; use the exact origin it prints. Port override: `PORT=8131 npm start`.
+Open [http://127.0.0.1:8130](http://127.0.0.1:8130). The app starts with six sample errors. Use the exact address printed in your terminal.
 
-For development, `npm run dev` builds browser assets and watches server sources. Re-run `npm run build` and reload after editing browser files. `.env.example` documents the two basic settings; the app does not automatically load `.env` files or need service credentials.
+If port 8130 is busy, use `PORT=8131 npm start` and open the new address.
 
-## Try the workflow
+## Try it out
 
-1. Choose **Checkout total is missing**, then **Capture this error**. The real SDK parses an exception and sends an event to the local transport.
-2. Select the issue and inspect its normalized SDK frame and allowlisted retained payload. The source sketch is illustrative; it is not source-map symbolication.
-3. Click **Mark resolved**, then **Capture again**. A recurrence after resolution becomes `regressed`, on either listed release.
-4. Try the inventory timeout or payment-unavailable scenario. Neither contacts an inventory server or payment provider.
-5. Filter issues by status or search locally. **Data policy** explains what is retained and discarded; **How it works** shows the architecture and provenance.
-6. **Clear session** discards this process's event/issue dataset. Restarting the server also creates a fresh demo dataset.
+1. Choose **Checkout total is missing** and click **Capture this error**.
+2. Select the issue to see the error details and the data the app kept. The code sketch helps explain the example; it is not a reconstructed copy of the source.
+3. Click **Mark resolved**, then **Capture again**. The issue returns as **regressed**, meaning it happened again after being resolved.
+4. Try the inventory timeout and payment error. These examples do not contact an inventory system or payment service.
+5. Use search and status filters to find issues. Open **Data policy** to see what the app keeps, or **How it works** to follow the capture process.
+6. Click **Clear session** to remove the current records. Restarting the app also clears them and loads fresh examples.
 
-Grouping is this app's simple fixed-scenario grouping, **not Sentry's backend grouping algorithm**. Regression is also deliberately simple: any new event on a resolved issue reopens it as regressed, regardless of release order. Only the last 200 events and 20 examples per issue are retained; counts describe the current process session. The three fixed scenarios bound the issue set.
+The app groups errors by their sample scenario. Any new error after resolution marks that issue as regressed, whichever sample release you choose. These are simple demo rules, not Sentry's own grouping rules.
 
-## What the project demonstrates
+## What this project shows
 
-- A standalone `NodeClient` and per-capture scopes using pinned official SDK packages.
-- Actual exception capture and stack parsing through the SDK envelope pipeline.
-- A `beforeSend` allowlist, followed by a second projection at the transport boundary.
-- A transport that discards protocol headers and non-event items, with no HTTP upload fallback.
-- A small original issue workflow: grouping, counters, resolution, reopening, recurrence and release labels.
-- Strict scenario/API validation, request/body limits, same-origin action checks, Host checks and bounded memory.
-- An accessible, responsive TypeScript/CSS interface with local assets and no browser analytics.
-- Tests for no egress, environment isolation, privacy projection, lifecycle and HTTP boundaries.
+- Capturing real exceptions with the official Sentry SDK.
+- Keeping only selected fields before storing an event.
+- Sending events to local memory instead of a remote service.
+- Building an issue inbox with search, filters and resolve/reopen actions.
+- Checking requests and limiting how much data the app keeps.
 
-The app does not implement Sentry's ingestion service, source-map symbolication, distributed tracing, alerting, persistence, teams, authentication, profiling or session replay. It is a local educational lab, not a production monitoring service or a replacement for Sentry.
+This is an original SDK integration. Sentry's platform and SDK belong to their authors; this project is not affiliated with Sentry. It does not copy the Sentry server or provide its tracing, replay, alerting, teams or other platform features.
 
-## Verify
+## Make changes
+
+Run `npm run dev` to build the browser files and watch the server code. After changing browser code, run `npm run build` again and reload the page.
+
+`.env.example` explains the basic host and port settings. The app does not load `.env` files automatically and does not need service credentials.
+
+## Run the checks
 
 ```sh
-npm run typecheck
-npm test
-npm run build
+npm run check
 npm run format:check
 npm audit
 ```
 
-`npm run check` combines type checking, tests and build. The test suite exercises actual SDK capture into local transport; network functions are denied during a dedicated no-egress test. Other tests cover hostile optional context, session/attachment/transaction/client-report filtering, invalid Origin/Host/content type, oversized regular/chunked bodies, unknown fields and rate limits.
+`npm run check` checks TypeScript, runs the tests and builds the app. The tests cover error capture, privacy rules, local storage and request handling. One test blocks network functions to check that capture makes no outside calls.
 
-See [verification evidence](docs/VERIFICATION.md), [architecture](docs/ARCHITECTURE.md), [security boundaries](SECURITY.md) and the [scoped upstream repository review](docs/UPSTREAM_REVIEW.md).
+Read [what was checked](docs/VERIFICATION.md), [how the app works](docs/ARCHITECTURE.md) or the [review of the upstream Sentry repository](docs/UPSTREAM_REVIEW.md).
 
-## Privacy and hosting
+## Data and sharing
 
-No browser SDK, replay, cookies, user identity or real telemetry input is enabled. The app constructs events only from three predefined scenarios. The only search input is a local DOM filter and is not submitted to the API. It is not a general-purpose scrubber for arbitrary production telemetry.
+The app accepts only its three sample scenarios. Do not put real customer information or production errors into it. It keeps the latest 200 events and up to 20 examples per issue. Counts cover the current run of the app.
 
-`SENTRY_DSN`, `SENTRY_AUTH_TOKEN`, Sentry release/environment settings and Spotlight environment settings cannot enable upload. The standalone client uses an explicitly supplied local transport and a reserved `example.invalid` DSN solely for SDK envelope generation. It has no live-upload mode.
+Everyone using the same running app shares one inbox. Clearing it clears it for everyone. There are no accounts or private workspaces. The request limiter briefly keeps IP addresses in memory; they are not added to events or app logs.
 
-The app stores no database or telemetry files. It does temporarily track source IPs in a bounded process-local write limiter, without exposing them in events/API responses or logging them. All visitors to one process share its synthetic inbox; clearing it affects that whole demo session. Do not enter real information or expose it as a multi-user monitoring service.
+Sentry environment settings cannot turn on uploads. The SDK uses a local transport and a reserved example address. There is no live-upload option or browser tracking.
 
-Non-loopback binding requires an explicit `APP_ORIGIN`, with HTTPS termination and matching Host preservation at your proxy. This is a configuration guard, not a hosting security certification. Publishing this repository does not deploy a website.
+**The GitHub repository shares the code; it does not deploy a live website.** The default address works only on the computer running the app. Hosting requires an explicit `APP_ORIGIN`, suitable HTTPS/proxy setup and a review of access controls. See [security and hosting notes](SECURITY.md).
 
-## Provenance and license
+## Credits and license
 
-Original application code is MIT licensed; see [LICENSE](LICENSE). Sentry Node/Core SDKs are separately MIT licensed. OpenTelemetry and other dependencies retain their own notices/licenses in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and `licenses/`.
+The original app code uses the [MIT license](LICENSE). Sentry's Node/Core SDKs and other packages keep their own licenses; see [third-party credits](THIRD_PARTY_NOTICES.md) and `licenses/`.
 
-No source, screenshots, logo, operational configuration, customer data or Git history from Sentry's platform is copied into this application. The upstream platform has its own license, distinct from the JavaScript SDK. Credit the SDK and this app's integration work separately when showcasing the project.
+No Sentry platform code, logos, screenshots, customer records, deployment settings or Git history were copied into this app. The platform's license is separate from the SDK's license.

@@ -1,36 +1,42 @@
-# Architecture
+# How Signal Room works
+
+Choose a sample error in the browser. The server triggers that error and passes it through the official Sentry SDK. The app keeps selected fields in memory and shows them in the inbox.
 
 ```mermaid
 flowchart LR
-  UI[Original local TypeScript interface] -->|Whitelisted scenario and release| API[Node HTTP boundary]
-  API --> Throw[Controlled exception]
-  Throw --> SDK[Official Sentry NodeClient + Scope]
-  SDK --> Policy[beforeSend allowlist]
-  Policy --> Transport[Local transport / second projection]
-  Transport --> Store[Bounded process-memory issue store]
+  UI[Browser] --> API[Check scenario and release]
+  API --> Error[Trigger sample error]
+  Error --> SDK[Sentry Node SDK]
+  SDK --> Filter[Keep approved fields]
+  Filter --> Transport[Local transport checks fields again]
+  Transport --> Store[In-memory inbox]
   Store --> UI
 ```
 
-## Responsibilities
+## Finding your way around
 
-| Module | Responsibility |
+| File or folder | What it does |
 |---|---|
-| `scenarios.ts` | Three deterministic failures and fictional service labels |
-| `telemetry.ts` | Dedicated official SDK client and capture scopes; no global uncaught handlers |
-| `privacy.ts` | Event reconstruction and normalized local-retention projection |
-| `local-transport.ts` | Drop non-event items and protocol headers; retain only safe projections |
-| `store.ts` | Group by fixed scenario, counters, last-200/last-20 retention, resolution and recurrence |
-| `http.ts` | Schema, Origin, Host, size/rate boundaries and explicit static-file map |
-| `src/client` | Original responsive UI, local search, filters and readable payload inspection |
+| `scenarios.ts` | Defines the three sample errors |
+| `telemetry.ts` | Creates a separate SDK client and captures each error in its own scope |
+| `privacy.ts` | Rebuilds events using approved fields and normalizes file paths |
+| `local-transport.ts` | Drops headers and non-event items, then checks fields again before storage |
+| `store.ts` | Groups issues, counts events, limits stored examples and tracks status |
+| `http.ts` | Checks requests, limits size/rate and serves only named static files |
+| `src/client` | Displays the inbox, search, filters and error details |
 
-## SDK versus application behavior
+The server files are in `src/server`.
 
-The SDK performs exception capture, event creation and stack parsing. The custom transport consumes its envelope. **The SDK does not implement the grouping shown here.** This demo's store groups by fixed scenario IDs; it does not reproduce Sentry's server-side algorithms.
+## What comes from the SDK
 
-After an issue is resolved, a new event for the same scenario makes it regressed. This applies to the same, earlier or later listed release. That rule is explicit and intentionally simpler than a production monitoring workflow.
+The SDK captures exceptions, creates events and reads stack traces. This app supplies the local transport and inbox rules. It does not use Sentry's server-side grouping algorithm.
 
-The UI's code sketch is explanatory. The normalized frame records the captured SDK line number, which can refer to bundled server code; no source maps or symbolication service are used.
+Errors from the same sample scenario share an issue. After you resolve it, any new event makes it regressed, even if you choose an earlier release.
 
-## Intentional constraints
+The code sketch is there to explain the example. The SDK line number may refer to the built server file. There is no source-map service to map it back to original source.
 
-No database, live DSN configuration, upload toggle, browser SDK, replay, real user identifiers, authentication, organization model, worker queue, performance traces or remote alerting are included. The public API cannot ingest arbitrary telemetry. External hosting requires a separate review of deployment/proxy/access controls.
+## What is left out
+
+There is no database, login, browser tracking, replay, cloud upload, tracing, alert service or background queue. The API accepts fixed sample choices, not arbitrary error data.
+
+The app keeps 200 events and up to 20 examples per issue. Everyone shares the same memory, which is cleared when the app stops. Hosting needs a separate review of the proxy, HTTPS and access controls.

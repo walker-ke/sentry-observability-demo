@@ -1,30 +1,30 @@
-# Scoped upstream review: getsentry/sentry
+# Review notes: getsentry/sentry
 
 Reviewed 26 October 2026. Reference snapshot: [`9f79f84e4787cb35c5c322be0f4dc0967e1c6463`](https://github.com/getsentry/sentry/tree/9f79f84e4787cb35c5c322be0f4dc0967e1c6463).
 
-## Scope
+## What was reviewed
 
-This is a portfolio-oriented review of selected public repository metadata, root documentation, license, dependency manifests and development guidance. It is **not** a complete architecture/security audit or full Git-history scan of Sentry. No private Sentry data, service credentials, running installation or internal systems were accessed. Nothing was changed upstream.
+This review looked at selected public repository details, root documentation, the license, package lists and setup instructions for portfolio use. It is **not** a complete architecture/security audit or full Git-history scan of Sentry. No private Sentry data, service credentials, running installation or internal systems were accessed. Nothing was changed upstream.
 
-The reference snapshot's license, package manifest and Python manifest were read at that exact commit. Root README and development guidance were also inspected. Upstream tests/builds were not run and the complete repository/history was not cloned. No claim is made that Sentry is free of secrets or vulnerabilities.
+The reference snapshot's license, package manifest and Python manifest were read at that exact commit. Root README and development guidance were also inspected. Upstream tests/builds were not run and the complete repository/history was not cloned. This review does not establish that Sentry has no secrets or vulnerabilities.
 
-## Architecture and feature overview
+## What Sentry does
 
 The [README](https://github.com/getsentry/sentry/blob/9f79f84e4787cb35c5c322be0f4dc0967e1c6463/README.md) describes a developer debugging platform and points to issue details, traces, replay, insights, logs and uptime workflows. It links separate official SDK repositories for many languages. The server platform and the client SDKs are separate projects.
 
-The root manifests show a large Python/Django backend and a React/TypeScript frontend. The [Python manifest](https://github.com/getsentry/sentry/blob/9f79f84e4787cb35c5c322be0f4dc0967e1c6463/pyproject.toml) declares Python >=3.13 and 114 entries in its primary dependency list. Examples include Django/DRF, asyncpg/psycopg2, Redis clients, Kafka/Arroyo, Snuba, Relay and Symbolic-related packages. Those dependencies indicate substantial service/ingestion/query/symbolication integration; they do not establish every production topology or enabled feature.
+The root manifests show a large Python/Django backend and a React/TypeScript frontend. The [Python manifest](https://github.com/getsentry/sentry/blob/9f79f84e4787cb35c5c322be0f4dc0967e1c6463/pyproject.toml) declares Python >=3.13 and 114 entries in its primary dependency list. Examples include Django/DRF, asyncpg/psycopg2, Redis clients, Kafka/Arroyo, Snuba, Relay and Symbolic-related packages. These packages suggest several connected services for receiving, searching and interpreting events. The package list alone does not show how production is deployed or which features are enabled.
 
-The [frontend manifest](https://github.com/getsentry/sentry/blob/9f79f84e4787cb35c5c322be0f4dc0967e1c6463/package.json) declares 38 direct dependency entries and 36 development entries at the root. It specifies React 19.3.0, a TypeScript 6 package alias, pnpm 12.10.1 and Rsbuild-oriented build commands. Workspace and lockfiles are present. This is a much larger operational footprint than a small standalone portfolio app.
+The [frontend manifest](https://github.com/getsentry/sentry/blob/9f79f84e4787cb35c5c322be0f4dc0967e1c6463/package.json) declares 38 direct dependency entries and 36 development entries at the root. It specifies React 19.3.0, a TypeScript 6 package alias, pnpm 12.10.1 and Rsbuild-oriented build commands. Workspace and lockfiles are present. Running this platform needs much more setup than a small portfolio app.
 
-## Documentation and reproducibility
+## Documentation and setup
 
 The repository provides a root README, development instructions, agent guidance, test tooling, frontend/backend configuration, fixtures, API documentation and extensive source/test directories. Development guidance specifies a virtual environment, managed dependencies and supporting development services. It directs contributors to area-specific instructions and targeted tests.
 
 The guidance explicitly says that the UI-only development command proxies API traffic to production Sentry infrastructure. That workflow was **not** used for this project. The local SDK demo has its own server, data and transport instead of requiring an account or interacting with a production Sentry organization.
 
-Upstream build/test success, operational scale, complete dependency health and deployment compatibility were not independently verified here. A manifest review is not a complete transitive dependency audit.
+Upstream build/test success, operational scale, complete dependency health and deployment compatibility were not independently verified here. Reading package lists does not check every dependency for vulnerabilities.
 
-## License and authorship boundary
+## License and credit
 
 The platform's [LICENSE.md](https://github.com/getsentry/sentry/blob/9f79f84e4787cb35c5c322be0f4dc0967e1c6463/LICENSE.md) identifies **FSL-1.1-Apache-2.0**, with its own permitted-purpose, redistribution, notice, trademark and future-license terms. It must not be relabeled as this portfolio author's original MIT-licensed platform. This review does not grant rights over upstream work.
 
@@ -32,7 +32,7 @@ The [JavaScript SDK repository](https://github.com/getsentry/sentry-javascript) 
 
 This portfolio project therefore implements an **original SDK integration**, not a rebranded export of the server platform. No core platform source, screenshots, logos, deployment configuration, history or customer records were copied. The local grouping and workflow are clearly described as original teaching logic rather than Sentry's algorithms.
 
-## Security and sensitive material
+## Data to keep private
 
 An error-monitoring installation can contain exception text, user identifiers, request URLs/headers/bodies, IP addresses, breadcrumbs, source context, attachments, replay data, infrastructure names and integrations. Those are risk categories, not a finding that they appear in the inspected public source.
 
@@ -40,7 +40,7 @@ For a portfolio, keep actual project DSNs, organization/project identifiers tied
 
 Upstream public fixtures may be synthetic; their provenance was not exhaustively assessed. No original fixture datasets were imported. A complete upstream-history scan and secret validation were outside this review, so this report must not be represented as clearing Sentry's whole history for reuse.
 
-## Safe showcase decision
+## What is safe to show
 
 | Material | Treatment in this project |
 |---|---|
@@ -52,7 +52,7 @@ Upstream public fixtures may be synthetic; their provenance was not exhaustively
 | Real DSNs, tokens, account-specific telemetry or customer context | Not used or published |
 | Claims of reproducing Sentry grouping, symbolication, alerting or scale | Not made |
 
-## Separate-demo recommendation implemented
+## The separate demo
 
 The resulting repository contains a small original Node/TypeScript app with an actual SDK capture pipeline, closed local transport, fixed synthetic scenarios, bounded memory, request validation, a clear data-policy view and tests. It starts without a cloud account or database. This demonstrates integration and privacy engineering while preserving upstream attribution.
 
