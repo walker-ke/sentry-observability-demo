@@ -1,0 +1,32 @@
+{
+  "name": "sentry-observability-demo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Independent synthetic error-monitoring lab using the official Sentry Node SDK with local-only transport",
+  "type": "module",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "dev": "npm run build && tsx watch src/server/index.ts",
+    "build": "node scripts/build.mjs",
+    "start": "node dist/server/index.js",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test tests/*.test.ts",
+    "check": "npm run typecheck && npm test && npm run build",
+    "format": "prettier --write src tests scripts package.json tsconfig.json",
+    "format:check": "prettier --check src tests scripts package.json tsconfig.json"
+  },
+  "dependencies": {
+    "@sentry/core": "11.9.0",
+    "@sentry/node": "11.9.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "esbuild": "^0.25.0",
+    "prettier": "^3.9.10",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.0"
+  },
+  "license": "MIT"
+}
